@@ -1,23 +1,27 @@
-#!/bin/sh
+#!/bin/bash
 
-set -e
+set -euo pipefail
 
-echo testing with python 3 >&2
+repo_dir=$(git rev-parse --show-toplevel)
+name=$(basename $repo_dir)-test
 
-echo -n building docker image for test... >&2
-dockerfile=Dockerfile.test
-image=$(docker build -q -f $dockerfile .)
-echo done. >&2
+docker build -t $name -f Dockerfile.test .
 
 docker run \
+    --name $name \
     --rm \
     -i $(tty -s && echo -t) \
     $(tty -s && echo -v $(pwd)/.hypothesis/:/usr/src/app/.hypothesis/) \
-    $image py.test \
+    $name \
+        py.test \
         -n auto \
         --cov=./ecs_update_monitor \
         --cov-report term-missing \
         --tb=short \
         "$@"
 
-docker run --rm $image flake8 --max-complexity=4
+docker run \
+    --name $name \
+    --rm \
+    $name \
+        flake8 --max-complexity=4
