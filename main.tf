@@ -32,12 +32,12 @@ resource "null_resource" "ecs_update_monitor" {
     cluster    = var.cluster
     service    = var.service
     taskdef    = var.taskdef
-    caller_arn = data.aws_caller_identity.current.arn
+    caller_arn = data.aws_caller_identity.current[0].arn
     region     = data.aws_region.current.name
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/provision.sh '${path.module}' '${var.cluster}' '${var.service}' '${var.taskdef}' '${data.aws_region.current.name}' '${data.aws_caller_identity.current.arn}'"
+    command = "${path.module}/provision.sh '${path.module}' '${var.cluster}' '${var.service}' '${var.taskdef}' '${data.aws_region.current.name}' '${data.aws_caller_identity.current[0].arn}'"
   }
 }
 
