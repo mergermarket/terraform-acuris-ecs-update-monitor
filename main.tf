@@ -26,6 +26,8 @@ data "aws_caller_identity" "current" {
 }
 
 resource "null_resource" "ecs_update_monitor" {
+  count = var.is_test ? 0 : 1
+
   triggers = {
     cluster    = var.cluster
     service    = var.service
