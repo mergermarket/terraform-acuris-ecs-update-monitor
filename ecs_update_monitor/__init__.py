@@ -1,4 +1,3 @@
-from cmath import log
 from time import sleep, time
 from ecs_update_monitor.logger import logger
 import datetime
@@ -62,10 +61,8 @@ class ECSMonitor:
     def _trigger_new_instance_alarm(self):
         logger.info("IN NEW INSTANCE TRIGGER CODE")
         response = self._boto_session.client('cloudwatch').put_metric_data(
-            Namespace = f'Platform/ECS',
-            MetricData = [
-                self._build_metric_data(self._cluster),
-            ]
+            Namespace=f'Platform/ECS',
+            MetricData=[self._build_metric_data(self._cluster)]
         )
         logger.info(response)
 
@@ -154,7 +151,8 @@ class ECSEventIterator:
 
     def _need_new_instance(self, messages):
         for msg in messages:
-            if "unable to place a task because no container instance met all of its requirements" in msg:
+            if "unable to place a task because no " \
+               "container instance met all of its requirements" in msg:
                 return True
         return False
 
@@ -229,10 +227,11 @@ class Event:
 
 
 class NewInstanceEvent(Event):
-    
+
     @property
     def done(self):
         return False
+
     @property
     def new_instance(self):
         return True
@@ -243,6 +242,7 @@ class DoneEvent(Event):
     @property
     def done(self):
         return True
+
     @property
     def new_instance(self):
         return False
@@ -253,9 +253,11 @@ class InProgressEvent(Event):
     @property
     def done(self):
         return False
+
     @property
     def new_instance(self):
         return False
+
 
 class TaskdefDoesNotMatchError(Exception):
     def __init__(self, expected, actual):

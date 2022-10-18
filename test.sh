@@ -24,4 +24,4 @@ docker run \
     --name $name \
     --rm \
     $name \
-        flake8 --max-complexity=4
+        flake8 --max-complexity=5
