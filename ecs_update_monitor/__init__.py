@@ -13,6 +13,7 @@ class UserFacingError(Exception):
 def run(cluster, service, taskdef, boto_session):
     event_iterator = ECSEventIterator(cluster, service, taskdef, boto_session)
     monitor = ECSMonitor(event_iterator, cluster, boto_session)
+    monitor._trigger_new_instance_alarm()
     monitor.wait()
 
 
@@ -27,7 +28,6 @@ class ECSMonitor:
         self._failed_count = 0
         self._cluster = cluster
         self._boto_session = boto_session
-        self._trigger_new_instance_alarm()
 
     def wait(self):
         self._check_ecs_deploy_progress()
