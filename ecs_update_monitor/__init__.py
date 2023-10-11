@@ -13,7 +13,7 @@ class UserFacingError(Exception):
 def run(cluster, service, taskdef, boto_session):
     event_iterator = ECSEventIterator(cluster, service, taskdef, boto_session)
     monitor = ECSMonitor(event_iterator, cluster, boto_session)
-    monitor._trigger_new_instance_alarm()
+    #monitor._trigger_new_instance_alarm()
     monitor.wait()
 
 
