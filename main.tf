@@ -18,6 +18,12 @@ variable "is_test" {
   default     = false
 }
 
+variable "timeout" {
+  description = "Timeout to wait for the deployment to be finished [seconds]."
+  type        = number
+  default     = 600
+}
+
 data "aws_region" "current" {
 }
 
@@ -37,7 +43,7 @@ resource "null_resource" "ecs_update_monitor" {
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/provision.sh '${path.module}' '${var.cluster}' '${var.service}' '${var.taskdef}' '${data.aws_region.current.name}' '${data.aws_caller_identity.current[0].arn}'"
+    command = "${path.module}/provision.sh '${path.module}' '${var.cluster}' '${var.service}' '${var.taskdef}' '${data.aws_region.current.name}' '${data.aws_caller_identity.current[0].arn}' '${var.timeout}'"
   }
 }
 
