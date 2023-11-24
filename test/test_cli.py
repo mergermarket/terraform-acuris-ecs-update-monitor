@@ -49,7 +49,7 @@ class TestECSMonitorCLI(unittest.TestCase):
         assert exit.exception.code != 0
         try:
             assert 'the following arguments are required: {}'.format(
-                '--cluster, --service, --taskdef, --region', '--timeoout'
+                '--cluster, --service, --taskdef, --region'
             ) in errors.getvalue()
         except AssertionError:
             print("python version is {}".format(sys.version_info))
