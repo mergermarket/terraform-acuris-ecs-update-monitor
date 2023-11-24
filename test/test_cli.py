@@ -49,7 +49,7 @@ class TestECSMonitorCLI(unittest.TestCase):
         assert exit.exception.code != 0
         try:
             assert 'the following arguments are required: {}'.format(
-                '--cluster, --service, --taskdef, --region'
+                '--cluster, --service, --taskdef, --region', '--timeoout'
             ) in errors.getvalue()
         except AssertionError:
             print("python version is {}".format(sys.version_info))
@@ -65,6 +65,7 @@ class TestECSMonitorCLI(unittest.TestCase):
         'taskdef': text(min_size=1, alphabet=IDENTIFIERS),
         'region': text(min_size=1, alphabet=IDENTIFIERS),
         'caller_arn': text(min_size=1, alphabet=IDENTIFIERS),
+        'timeout': text(min_size=1, alphabet=digits),
     }))
     def test_command_line_paramters_used(self, fixtures):
 
@@ -73,6 +74,7 @@ class TestECSMonitorCLI(unittest.TestCase):
         assume(fixtures['taskdef'][0] != '-')
         assume(fixtures['region'][0] != '-')
         assume(fixtures['caller_arn'][0] != '-')
+        assume(fixtures['timeout'][0] != '-')
 
         # Given
         with patch('ecs_update_monitor.cli.Session') as Session, \
@@ -83,6 +85,7 @@ class TestECSMonitorCLI(unittest.TestCase):
             taskdef = fixtures['taskdef']
             region = fixtures['region']
             caller_arn = fixtures['caller_arn']
+            timeout = fixtures['timeout']
 
             session = Mock()
             Session.return_value = session
@@ -96,7 +99,8 @@ class TestECSMonitorCLI(unittest.TestCase):
             cli.main([
                 '--cluster', cluster, '--service', service,
                 '--taskdef', taskdef, '--region', region,
-                '--caller-arn', caller_arn
+                '--caller-arn', caller_arn,
+                '--timeout', timeout
             ])
 
             # Then
@@ -104,7 +108,7 @@ class TestECSMonitorCLI(unittest.TestCase):
             session.client.assert_called_once_with('sts')
             mock_sts.get_caller_identity.assert_called_once_with()
             run.assert_called_once_with(
-                cluster, service, taskdef, session
+                cluster, service, taskdef, session, timeout
             )
 
     @given(fixed_dictionaries({
@@ -115,6 +119,7 @@ class TestECSMonitorCLI(unittest.TestCase):
         'access_key': text(min_size=1, alphabet=IDENTIFIERS),
         'secret_key': text(min_size=1, alphabet=IDENTIFIERS),
         'token': text(min_size=1, alphabet=IDENTIFIERS),
+        'timeout': text(min_size=1, alphabet=digits),
     }))
     def test_role_assumed(self, fixtures):
 
@@ -126,6 +131,7 @@ class TestECSMonitorCLI(unittest.TestCase):
 
             root_session = Mock()
             assumed_session = Mock()
+            timeout = fixtures['timeout']
 
             def SessionContructor(
                 aws_access_key_id=None, aws_secret_access_key=None,
@@ -159,6 +165,7 @@ class TestECSMonitorCLI(unittest.TestCase):
                     fixtures['account_id'], fixtures['role'],
                     fixtures['session_name']
                 ),
+                '--timeout', fixtures['timeout']
             ])
 
             # Then
@@ -175,10 +182,10 @@ class TestECSMonitorCLI(unittest.TestCase):
                 region_name=fixtures['region'],
                 aws_access_key_id=fixtures['access_key'],
                 aws_secret_access_key=fixtures['secret_key'],
-                aws_session_token=fixtures['token'],
+                aws_session_token=fixtures['token']
             )
             run.assert_called_once_with(
-                ANY, ANY, ANY, assumed_session
+                ANY, ANY, ANY, assumed_session, timeout
             )
 
     @patch('ecs_update_monitor.ECSMonitor')
@@ -239,7 +246,8 @@ class TestECSMonitorCLI(unittest.TestCase):
             cli.main([
                 '--cluster', 'dummy', '--service', 'dummy',
                 '--taskdef', 'dummy', '--region', 'region',
-                '--caller-arn', mock_arn
+                '--caller-arn', mock_arn,
+                '--timeout', '600',
             ])
 
         # Then
@@ -289,9 +297,9 @@ class TestECSMonitorCLI(unittest.TestCase):
             InProgressEvent(0, 0, 2, 0, []),
             InProgressEvent(0, 0, 2, 0, []),
         ])
-        ecs_monitor = ECSMonitor(ecs_event_iterator, 'dummy', mock_session)
+        ecs_monitor = ECSMonitor(ecs_event_iterator, 'dummy', mock_session, 0.1)
         ecs_monitor._INTERVAL = 0.1
-        ecs_monitor._TIMEOUT = 0.1
+        ecs_monitor._timeout = 0.1
         mock_monitor.return_value = ecs_monitor
         # When
         with unittest.TestCase.assertLogs(
@@ -300,7 +308,8 @@ class TestECSMonitorCLI(unittest.TestCase):
             cli.main([
                 '--cluster', 'dummy', '--service', 'dummy',
                 '--taskdef', 'dummy', '--region', 'region',
-                '--caller-arn', mock_arn
+                '--caller-arn', mock_arn,
+                '--timeout', '0.1',
             ])
 
         # Then

@@ -10,24 +10,24 @@ class UserFacingError(Exception):
     pass
 
 
-def run(cluster, service, taskdef, boto_session):
+def run(cluster, service, taskdef, boto_session, timeout):
     event_iterator = ECSEventIterator(cluster, service, taskdef, boto_session)
-    monitor = ECSMonitor(event_iterator, cluster, boto_session)
+    monitor = ECSMonitor(event_iterator, cluster, boto_session, timeout)
     # monitor._trigger_new_instance_alarm()
     monitor.wait()
 
 
 class ECSMonitor:
 
-    _TIMEOUT = 600
     _INTERVAL = 15
 
-    def __init__(self, ecs_event_iterator, cluster, boto_session):
+    def __init__(self, ecs_event_iterator, cluster, boto_session, timeout = 600):
         self._ecs_event_iterator = ecs_event_iterator
         self._previous_running_count = 0
         self._failed_count = 0
         self._cluster = cluster
         self._boto_session = boto_session
+        self._timeout = timeout
 
     def wait(self):
         self._check_ecs_deploy_progress()
@@ -41,10 +41,10 @@ class ECSMonitor:
                 return True
             if event.new_instance:
                 self._trigger_new_instance_alarm()
-            if time() - start > self._TIMEOUT:
+            if time() - start > self._timeout:
                 raise TimeoutError(
                     'Deployment timed out - didn\'t complete '
-                    'within {} seconds'.format(self._TIMEOUT)
+                    'within {} seconds'.format(self._timeout)
                 )
             sleep(self._INTERVAL)
 

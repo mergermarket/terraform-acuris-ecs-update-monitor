@@ -20,6 +20,9 @@ def parse_args(argv):
     parser.add_argument(
         '--caller-arn', help='ARN of caller.', required=False
     )
+    parser.add_argument(
+        '--timeout', help='Timeout in seconds.', required=False, default=600
+    )
     return parser.parse_args(argv)
 
 
@@ -54,7 +57,7 @@ def main(argv):
     if caller['Arn'] != args.caller_arn:
         session = switch_role(sts, args.caller_arn, args.region)
     try:
-        run(args.cluster, args.service, args.taskdef, session)
+        run(args.cluster, args.service, args.taskdef, session, args.timeout)
     except UserFacingError as e:
         logger.error(str(e))
         sys.exit(1)
