@@ -34,9 +34,9 @@ class TestECSMonitor(unittest.TestCase):
         ])
 
         boto_session = Mock()
-        ecs_monitor = ECSMonitor(ecs_event_iterator, 'dummy', boto_session)
+        ecs_monitor = ECSMonitor(ecs_event_iterator, 'dummy', boto_session, 600)
         ecs_monitor._INTERVAL = 0.1
-        ecs_monitor._TIMEOUT = 0.1
+        ecs_monitor._timeout = 0.1
 
         # Then
         self.assertRaises(TimeoutError, ecs_monitor.wait)
@@ -551,6 +551,7 @@ class TestRunECSMonitor(unittest.TestCase):
         'cluster': text(alphabet=IDENTIFIERS),
         'service': text(alphabet=IDENTIFIERS),
         'taskdef': text(alphabet=IDENTIFIERS),
+        'timeout': text(alphabet=digits),
     }))
     def test_run(self, fixtures):
         # Given
@@ -566,11 +567,12 @@ class TestRunECSMonitor(unittest.TestCase):
             cluster = fixtures['cluster']
             service = fixtures['service']
             taskdef = fixtures['taskdef']
+            timeout = fixtures['timeout']
 
             boto_session = Mock()
 
             # When
-            run(cluster, service, taskdef, boto_session)
+            run(cluster, service, taskdef, boto_session, timeout)
 
             # Then
             ECSEventIterator.assert_called_once_with(
@@ -579,6 +581,7 @@ class TestRunECSMonitor(unittest.TestCase):
             ECSMonitor.assert_called_once_with(
                 event_iterator,
                 cluster,
-                boto_session
+                boto_session,
+                timeout
             )
             ecs_monitor.wait.assert_called_once()

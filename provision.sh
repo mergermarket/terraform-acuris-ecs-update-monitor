@@ -13,4 +13,5 @@ python -m ecs_update_monitor --cluster    "$2" \
                              --service    "$3" \
                              --taskdef    "$4" \
                              --region     "$5" \
-                             --caller-arn "$6"
+                             --caller-arn "$6" \
+                             --timeout    "$7"
