@@ -34,7 +34,10 @@ class TestECSMonitor(unittest.TestCase):
         ])
 
         boto_session = Mock()
-        ecs_monitor = ECSMonitor(ecs_event_iterator, 'dummy', boto_session, 600)
+        ecs_monitor = ECSMonitor(ecs_event_iterator,
+                                 'dummy',
+                                 boto_session,
+                                 600)
         ecs_monitor._INTERVAL = 0.1
         ecs_monitor._timeout = 0.1
 

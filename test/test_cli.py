@@ -297,7 +297,10 @@ class TestECSMonitorCLI(unittest.TestCase):
             InProgressEvent(0, 0, 2, 0, []),
             InProgressEvent(0, 0, 2, 0, []),
         ])
-        ecs_monitor = ECSMonitor(ecs_event_iterator, 'dummy', mock_session, 0.1)
+        ecs_monitor = ECSMonitor(ecs_event_iterator,
+                                 'dummy',
+                                 mock_session,
+                                 0.1)
         ecs_monitor._INTERVAL = 0.1
         ecs_monitor._timeout = 0.1
         mock_monitor.return_value = ecs_monitor
