@@ -24,7 +24,7 @@ variable "timeout" {
 }
 
 data "aws_region" "current" {
-}}
+}
 
 data "aws_caller_identity" "current" {
   count = var.is_test ? 0 : 1
