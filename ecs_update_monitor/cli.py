@@ -21,7 +21,11 @@ def parse_args(argv):
         '--caller-arn', help='ARN of caller.', required=False
     )
     parser.add_argument(
-        '--timeout', help='Timeout in seconds.', type=float, required=False, default=600
+        '--timeout',
+        help='Timeout in seconds.',
+        type=float,
+        required=False,
+        default=600.0
     )
     return parser.parse_args(argv)
 

@@ -24,7 +24,7 @@ class ECSMonitor:
     def __init__(self,
                  ecs_event_iterator,
                  cluster, boto_session,
-                 timeout=600):
+                 timeout=600.0):
         self._ecs_event_iterator = ecs_event_iterator
         self._previous_running_count = 0
         self._failed_count = 0
