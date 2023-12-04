@@ -2,8 +2,8 @@
 
 set -e
 
-if [ "$#" != "6" ]; then
-    echo 'Usage: provision.sh <module-root> <cluster> <service> <taskdef> <region> <caller-arn>' >&2
+if [ "$#" != "7" ]; then
+    echo 'Usage: provision.sh <module-root> <cluster> <service> <taskdef> <region> <caller-arn> <timeout>' >&2
     exit 1
 fi
 
