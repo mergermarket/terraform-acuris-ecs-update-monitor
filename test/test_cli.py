@@ -108,7 +108,7 @@ class TestECSMonitorCLI(unittest.TestCase):
             session.client.assert_called_once_with('sts')
             mock_sts.get_caller_identity.assert_called_once_with()
             run.assert_called_once_with(
-                cluster, service, taskdef, session, timeout
+                cluster, service, taskdef, session, float(timeout)
             )
 
     @given(fixed_dictionaries({
@@ -131,7 +131,7 @@ class TestECSMonitorCLI(unittest.TestCase):
 
             root_session = Mock()
             assumed_session = Mock()
-            timeout = fixtures['timeout']
+            timeout = float(fixtures['timeout'])
 
             def SessionContructor(
                 aws_access_key_id=None, aws_secret_access_key=None,
