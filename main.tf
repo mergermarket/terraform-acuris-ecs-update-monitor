@@ -43,7 +43,7 @@ resource "null_resource" "ecs_update_monitor" {
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/provision.sh '${path.module}' '${var.cluster}' '${var.service}' '${var.taskdef}' '${data.aws_region.current.name}' '${data.aws_caller_identity.current[0].arn}' '${var.timeout}'"
+    command = "${path.module}/provision.sh '${path.module}' '${var.cluster}' '${var.service}' '${var.taskdef}' '${data.aws_region.current.region}' '${data.aws_caller_identity.current[0].arn}' '${var.timeout}'"
   }
 }
 
