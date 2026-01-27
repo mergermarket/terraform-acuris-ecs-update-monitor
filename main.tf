@@ -38,7 +38,7 @@ resource "null_resource" "ecs_update_monitor" {
     service    = var.service
     taskdef    = var.taskdef
     caller_arn = data.aws_caller_identity.current[0].arn
-    region     = data.aws_region.current.name
+    region     = data.aws_region.current.region
     timeout    = var.timeout
   }
 
